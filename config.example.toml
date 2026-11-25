@@ -1,0 +1,22 @@
+# usage-guard. The daemon reloads this file when you save it.
+
+timezone = "Europe/Madrid"
+stale_minutes = 10     # with an older reading: "no data", no alerts
+repeat_minutes = 15    # how often the alert repeats above "excess"
+
+[thresholds]           # spent today / today's budget
+warn = 0.8
+limit = 1.0
+excess = 1.2
+
+[widget]
+powershell = ""        # path to powershell.exe; empty = autodetect
+
+# One entry per account: config_dir is its CLAUDE_CONFIG_DIR.
+[[accounts]]
+name = "personal"
+config_dir = "~/.claude.personal"
+
+[[accounts]]
+name = "other"
+config_dir = "~/.claude-other"

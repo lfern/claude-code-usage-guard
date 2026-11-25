@@ -1,0 +1,1 @@
+{"session_id":"abc-1","cost":{"total_api_duration_ms":100},"rate_limits":{"five_hour":{"used_percentage":12.4,"resets_at":1795600000},"seven_day":{"used_percentage":44,"resets_at":1796029200}}}

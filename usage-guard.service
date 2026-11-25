@@ -1,0 +1,13 @@
+[Unit]
+Description=usage-guard: Claude Code usage alerts
+
+[Service]
+ExecStart=%h/.local/bin/usage-guardd
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+KillMode=mixed
+Nice=10
+
+[Install]
+WantedBy=default.target
