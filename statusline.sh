@@ -51,6 +51,21 @@ save_state() {
         fi
     fi
     [ -n "$state" ] || return 0
+
+    # With several sessions open, one that was idle may still carry its old percentages.
+    # Within one window usage only goes up, so a drop against a reading of the last
+    # 10 minutes is ignored. After that it is accepted (the quota may have been reset).
+    printf '%s' "$state" | jq -e --slurpfile old "$guard_dir/state.json" '
+        def older($now; $old): $now != null and $old != null and $now < $old;
+        ($old[0] // {}) as $o
+        | (.seven_day_resets_at != null and $o.seven_day_resets_at != null
+           and ((.seven_day_resets_at - $o.seven_day_resets_at) | fabs) < 3600) as $same_week
+        | (.five_hour_resets_at != null and $o.five_hour_resets_at != null
+           and ((.five_hour_resets_at - $o.five_hour_resets_at) | fabs) < 600) as $same_5h
+        | (.read_at - $o.read_at) < 600
+          and ($same_week and older(.seven_day_pct; $o.seven_day_pct)
+               or ($same_5h and older(.five_hour_pct; $o.five_hour_pct)))
+        ' >/dev/null 2>&1 && return 0
     write_atomic "$guard_dir/state.json" "$state"
 }
 

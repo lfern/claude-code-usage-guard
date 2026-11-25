@@ -76,6 +76,7 @@ In `~/.config/usage-guard/config.toml`; the daemon reloads it when you save.
 - **No data**: the last reading is more than 10 min old. This is normal when you are not using
   Claude Code: the sensor only refreshes after the session has talked to the API, so an idle
   session cannot make old data look new.
+- The icon shows the share of the budget of today that is spent: 3 points of 15 is 20.
 - A threshold crossed while snoozed is announced when the snooze ends, if it still applies.
 - Usage from another machine before the first reading of the day does not count as today's.
 
@@ -95,6 +96,8 @@ In `~/.config/usage-guard/config.toml`; the daemon reloads it when you save.
 - The widget is started with `powershell.exe -ExecutionPolicy Bypass`, for that process only, so
   that the unsigned `widget.ps1` can run. It also creates one registry key,
   `HKCU:\Software\Classes\AppUserModelId\UsageGuard.Widget`, so that toasts show the right name.
+
+See [CHANGELOG.md](CHANGELOG.md) for the changes in each version.
 
 ## License
 

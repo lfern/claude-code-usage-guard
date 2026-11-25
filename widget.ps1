@@ -196,7 +196,7 @@ function Update-Panel {
         $row.WeekText.Text = "$(Format-Number $account.week)%"
         Set-Bar $row.Week ($(if ($null -eq $account.week) { 0 } else { $account.week / 100 })) $(if ($account.fresh) { $Muted } else { $Colors.gray })
         if ($account.fresh) {
-            $row.DayText.Text = "$(Format-Number $account.spent) / $(Format-Number $account.budget)%"
+            $row.DayText.Text = "$([math]::Round($account.ratio * 100))%  ($(Format-Number $account.spent) of $(Format-Number $account.budget))"
             Set-Bar $row.Day $account.ratio $color
         } else {
             $row.DayText.Text = 'no data'

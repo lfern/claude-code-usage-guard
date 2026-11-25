@@ -304,6 +304,29 @@ class StatuslineTest(Base):
         self.run_line(json.dumps(data))
         self.assertNotIn("mark", storage.read_json(self.account.state_path))
 
+    def test_old_percentages_from_another_session_are_ignored(self):
+        data = json.loads((FIXTURES / "statusline_input.json").read_text())
+        limits = data["rate_limits"]
+
+        def paint(week, five, hours=0):
+            data["cost"]["total_api_duration_ms"] += 1
+            limits["seven_day"] = {"used_percentage": week, "resets_at": 1796029200 + hours * 3600}
+            limits["five_hour"]["used_percentage"] = five
+            self.run_line(json.dumps(data))
+            state = storage.read_json(self.account.state_path)
+            return state["seven_day_pct"], state["five_hour_pct"]
+
+        self.start_session()
+        self.assertEqual(paint(5, 12), (5, 12))
+        self.assertEqual(paint(4, 9), (5, 12))
+        self.assertEqual(paint(5, 11), (5, 12))
+        self.assertEqual(paint(5, 12.5), (5, 12.5))
+        self.assertEqual(paint(1, 13, hours=168), (1, 13))  # new week
+        state = storage.read_json(self.account.state_path)
+        state["read_at"] -= 700
+        storage.write_json_atomic(self.account.state_path, state)
+        self.assertEqual(paint(0, 1, hours=168), (0, 1))    # nothing recent to compare with
+
     def test_today_is_shown_until_it_expires(self):
         for expiry, text in ((9999999999, "today:4/15%"), (1, "today:--/--%")):
             storage.write_json_atomic(self.account.today_path, {"spent": 4.2, "budget": 15, "valid_until": expiry})
